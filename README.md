@@ -1,2 +1,2 @@
 # Pharmanage
-A Pharmacy Managing System
+A Simple Pharmacy Managing System Using Database
