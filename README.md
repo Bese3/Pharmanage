@@ -1,2 +1,2 @@
-# Pharmanage
-A Simple Pharmacy Managing System Using Database
+# FINGERPRINT ATTENDANCE SYSTEM
+
