@@ -1,18 +1,19 @@
-//*******************************libraries********************************
 #include <SPI.h>
 #include <Wire.h>
 #include <ESP8266WiFi.h>
 #include <SoftwareSerial.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
-#include <Adafruit_GFX.h>          //https://github.com/adafruit/Adafruit-GFX-Library
-#include <Adafruit_SSD1306.h>      //https://github.com/adafruit/Adafruit_SSD1306
-#include <Adafruit_Fingerprint.h>  //https://github.com/adafruit/Adafruit-Fingerprint-Sensor-Library
+#include <Adafruit_GFX.h>          
+#include <Adafruit_SSD1306.h>      
+#include <Adafruit_Fingerprint.h>  
+
+
 //************************************************************************
-//Fingerprint scanner Pins
+//Fingerprint scanner Pin
 #define Finger_Rx 14 //D5
 #define Finger_Tx 12 //D6
-// Declaration for SSD1306 display connected using software I2C
+// Declaration for SSD1306 display connected using I2C configration
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     0 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -21,12 +22,13 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 SoftwareSerial mySerial(Finger_Rx, Finger_Tx);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 //************************************************************************
-/* Set these to your desired credentials. */
-const char *ssid = "G";  //"MX+";  //ENTER YOUR WIFI SETTINGS
+
+
+const char *ssid = "G";  //"MX+";  
 const char *password = "passcode1";  //"zxcvbnm!321";
 //************************************************************************
-String postData ; // post array that will be send to the website
-String link = "http://192.168.62.114/biometricattendance/getdata.php"; //computer IP or the server domain
+String postData ; //array that will be send to the website
+String link = "http://192.168.62.114/biometricattendance/getdata.php"; 
 int FingerID = 0;     // The Fingerprint ID from the scanner 
 uint8_t id;
 //*************************Biometric Icons*********************************
@@ -518,7 +520,7 @@ void connectToWiFi(){
     display.display();
     
     Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());  //IP address assigned to your ESP
+    Serial.println(WiFi.localIP());  //IP address assigned to ESP
 
 }
 //=======================================================================
@@ -562,22 +564,22 @@ void DisplayFingerprintID(){
 //************send the fingerprint ID to the website*************
 void SendFingerprintID( int finger ){
   WiFiClient client;
-  HTTPClient http;    //Declare object of class HTTPClient
-  //Post Data
-  postData = "FingerID=" + String(finger); // Add the Fingerprint ID to the Post array in order to send it
-  // Post methode
+  HTTPClient http;    
+  
+  postData = "FingerID=" + String(finger); 
+ 
 
-  //this ip might need to be changed to 'link'
-  http.begin(client,link); //initiate HTTP request, put your Website URL or Your Computer IP 
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
   
-  int httpCode = http.POST(postData);   //Send the request
-  String payload = http.getString();    //Get the response payload
+  http.begin(client,link);  
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");   
+
+  int httpCode = http.POST(postData);  
+  String payload = http.getString();   
   
-  Serial.println(httpCode);   //Print HTTP return code
-  Serial.println(payload);    //Print request response payload
-  Serial.println(postData);   //Post Data
-  Serial.println(finger);     //Print fingerprint ID
+  Serial.println(httpCode); 
+  Serial.println(payload);    
+  Serial.println(postData);   
+  Serial.println(finger);     
 
   if (payload.substring(0, 5) == "login") {
     String user_name = payload.substring(5);
@@ -673,16 +675,15 @@ int getFingerprintID() {
 //******************Check if there a Fingerprint ID to delete******************
 void ChecktoDeleteID(){
   WiFiClient client;
-  HTTPClient http;    //Declare object of class HTTPClient
-  //Post Data
-  postData = "DeleteID=check"; // Add the Fingerprint ID to the Post array in order to send it
-  // Post methode
-
-  http.begin(client, link); //initiate HTTP request, put your Website URL or Your Computer IP 
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
+  HTTPClient http;
   
-  int httpCode = http.POST(postData);   //Send the request
-  String payload = http.getString();    //Get the response payload
+  postData = "DeleteID=check"; 
+
+  http.begin(client, link);
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    
+  
+  int httpCode = http.POST(postData);   
+  String payload = http.getString();    
 
   if (payload.substring(0, 6) == "del-id") {
     String del_id = payload.substring(6);
@@ -690,8 +691,8 @@ void ChecktoDeleteID(){
     deleteFingerprint( del_id.toInt() );
   }
   
-  http.end();  //Close connection
-}
+  http.end();  
+  }
 //******************Delete Finpgerprint ID*****************
 uint8_t deleteFingerprint( int id) {
   uint8_t p = -1;
@@ -748,16 +749,14 @@ uint8_t deleteFingerprint( int id) {
 //******************Check if there a Fingerprint ID to add******************
 void ChecktoAddID(){
  WiFiClient client;
-  HTTPClient http;    //Declare object of class HTTPClient
-  //Post Data
-  postData = "Get_Fingerid=get_id"; // Add the Fingerprint ID to the Post array in order to send it
-  // Post methode
+  HTTPClient http;   
+  postData = "Get_Fingerid=get_id"; 
 
-  http.begin(client, link); //initiate HTTP request, put your Website URL or Your Computer IP 
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
+  http.begin(client, link);  
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    
   
-  int httpCode = http.POST(postData);   //Send the request
-  String payload = http.getString();    //Get the response payload
+  int httpCode = http.POST(postData);  
+  String payload = http.getString();   
 
   if (payload.substring(0, 6) == "add-id") {
     String add_id = payload.substring(6);
@@ -765,7 +764,7 @@ void ChecktoAddID(){
     id = add_id.toInt();
     getFingerprintEnroll();
   }
-  http.end();  //Close connection
+  http.end();  
 }
 //******************Enroll a Finpgerprint ID*****************
 uint8_t getFingerprintEnroll() {
@@ -953,16 +952,15 @@ uint8_t getFingerprintEnroll() {
 //******************Check if there a Fingerprint ID to add******************
 void confirmAdding(){
    WiFiClient client;
-  HTTPClient http;    //Declare object of class HTTPClient
+  HTTPClient http;    
   //Post Data
-  postData = "confirm_id=" + String(id); // Add the Fingerprint ID to the Post array in order to send it
-  // Post methode
+  postData = "confirm_id=" + String(id); 
 
-  http.begin(client, link); //initiate HTTP request, put your Website URL or Your Computer IP 
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
-  
-  int httpCode = http.POST(postData);   //Send the request
-  String payload = http.getString();    //Get the response payload
+  http.begin(client, link);  
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");    
+
+  int httpCode = http.POST(postData); 
+    String payload = http.getString();
 
   display.clearDisplay();
   display.setTextSize(1.5);             // Normal 1:1 pixel scale
@@ -981,16 +979,12 @@ void setup() {
 
   Serial.begin(115200);
   
-  //-----------initiate OLED display-------------
   
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+    for(;;);
   }
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  // you can delet these three lines if you don't want to get the Adfruit logo appear
+  
 
   
   //---------------------------------------------
@@ -999,7 +993,7 @@ void setup() {
   
   //---------------------------------------------
   
-  // set the data rate for the sensor serial port
+
   finger.begin(57600);
   Serial.println("\n\nAdafruit finger detect test");
 
@@ -1021,9 +1015,7 @@ void setup() {
   Serial.print("Sensor contains "); Serial.print(finger.templateCount); Serial.println(" templates");
   Serial.println("Waiting for valid finger...");
   
-  //------------*test the connection*------------
-  
-  //SendFingerprintID( FingerID );
+
   
 }
 //************************************************************************
@@ -1036,7 +1028,7 @@ void loop() {
   //---------------------------------------------
   //If there no fingerprint has been scanned return -1 or -2 if there an error or 0 if there nothing, The ID start form 1 to 127
   FingerID = getFingerprintID();  // Get the Fingerprint ID from the Scanner
-  delay(50);            //don't need to run this at full speed.
+  delay(50);         
   
   //---------------------------------------------
   
